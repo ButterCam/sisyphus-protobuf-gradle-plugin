@@ -1,0 +1,19 @@
+[versions]
+kotlin = "1.8.10"
+plugin-publishing = "1.1.0"
+ktlint = "11.3.1"
+protobuf = "3.22.0"
+grpc = "1.53.0"
+sisyphus = "1.6.10"
+android-plugin = "4.1.2"
+
+[libraries]
+protobuf-java = { module = "com.google.protobuf:protobuf-java", version.ref = "protobuf" }
+sisyphus-protoc = { module = "com.bybutter.sisyphus.tools:sisyphus-protoc", version.ref = "sisyphus" }
+sisyphus-protocRunner = { module = "com.bybutter.sisyphus.tools:sisyphus-protoc-runner", version.ref = "sisyphus" }
+gradle-android = { module = "com.android.tools.build:gradle", version.ref = "android-plugin" }
+
+[plugins]
+plugin-publishing = { id = "com.gradle.plugin-publish", version.ref = "plugin-publishing" }
+kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
