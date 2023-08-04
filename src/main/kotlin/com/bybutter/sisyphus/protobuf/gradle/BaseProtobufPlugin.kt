@@ -46,6 +46,7 @@ abstract class BaseProtobufPlugin : Plugin<Project> {
                         Category.ENFORCED_PLATFORM, Category.REGULAR_PLATFORM, Category.LIBRARY -> {
                             dependency.isTransitive = true
                         }
+
                         else -> {
                             dependency.isTransitive = false
                         }
@@ -121,6 +122,36 @@ abstract class BaseProtobufPlugin : Plugin<Project> {
 
             it.dependsOn(extractProtoTask(sourceSetName))
             generateProtoTask().dependsOn(it)
+        }.get()
+    }
+
+    protected open fun sourceTask(sourceSetName: String): ProtoSourceTask {
+        val name = protoSourceTaskName(sourceSetName)
+        return project.tasks.findByName(name) as? ProtoSourceTask ?: project.tasks.register(
+            name,
+            ProtoSourceTask::class.java
+        ) {
+            it.protoPath.set(workDir(sourceSetName))
+            it.output.set(outDir(sourceSetName))
+            it.group = "proto"
+            it.description = "Merge proto generated source for '$sourceSetName' source set."
+
+            it.dependsOn(generateProtoTask(sourceSetName))
+        }.get()
+    }
+
+    protected open fun resourceTask(sourceSetName: String): ProtoSourceTask {
+        val name = protoResourceTaskName(sourceSetName)
+        return project.tasks.findByName(name) as? ProtoSourceTask ?: project.tasks.register(
+            name,
+            ProtoSourceTask::class.java
+        ) {
+            it.protoPath.set(workDir(sourceSetName))
+            it.output.set(metadataDir(sourceSetName))
+            it.group = "proto"
+            it.description = "Merge proto generated resource for '$sourceSetName' source set."
+
+            it.dependsOn(generateProtoTask(sourceSetName))
         }.get()
     }
 

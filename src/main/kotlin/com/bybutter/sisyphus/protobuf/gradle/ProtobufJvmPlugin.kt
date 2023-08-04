@@ -2,8 +2,8 @@ package com.bybutter.sisyphus.protobuf.gradle
 
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.file.FileCollection
+import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.tasks.SourceSet
-import org.gradle.api.tasks.bundling.Jar
 import org.gradle.plugins.ide.idea.model.IdeaModel
 
 class ProtobufJvmPlugin : BaseProtobufPlugin() {
@@ -52,6 +52,8 @@ class ProtobufJvmPlugin : BaseProtobufPlugin() {
         generateProtoTask()
         extractProtoTask(sourceSet.name)
         generateProtoTask(sourceSet.name)
+        val sourceTask = sourceTask(sourceSet.name)
+        val resourceTask = resourceTask(sourceSet.name)
 
         sourceSet.extensions.add(
             "proto",
@@ -61,34 +63,15 @@ class ProtobufJvmPlugin : BaseProtobufPlugin() {
         )
 
         sourceSet.resources {
-            it.srcDir(metadataDir(sourceSet.name))
+            it.srcDir(resourceTask)
         }
 
-        sourceSet.java {
-            it.srcDir(outDir(sourceSet.name))
+        sourceSet.extensions.configure<SourceDirectorySet>("kotlin") {
+            it.srcDir(sourceTask)
         }
     }
 
     private fun afterApplySourceSet(sourceSet: SourceSet) {
-        val kotlinTask = project.tasks.findByName(compileKotlinTaskName(sourceSet.name))
-        if (extension.autoGenerating && kotlinTask != null) {
-            kotlinTask.dependsOn(generateProtoTask(sourceSet.name))
-        }
-
-        val processResourcesTask = project.tasks.findByName(sourceSet.processResourcesTaskName)
-        if (extension.autoGenerating && processResourcesTask != null) {
-            processResourcesTask.dependsOn(generateProtoTask(sourceSet.name))
-        }
-
-        if (sourceSet.isMainSourceSet()) {
-            project.tasks.withType(Jar::class.java).configureEach {
-                it.mustRunAfter(generateProtoTask(sourceSet.name))
-            }
-        }
-
-        project.tasks.findByName(runKtlintCheckTaskName(sourceSet.name))
-            ?.dependsOn(generateProtoTask(sourceSet.name))
-
         project.extensions.findByType(IdeaModel::class.java)?.apply {
             module.sourceDirs = module.sourceDirs + protoSrc(sourceSet.name)
             module.generatedSourceDirs.add(outDir(sourceSet.name))

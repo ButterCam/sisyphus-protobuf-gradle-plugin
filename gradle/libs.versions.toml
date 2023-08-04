@@ -1,9 +1,8 @@
 [versions]
-kotlin = "1.8.10"
-plugin-publishing = "1.1.0"
-ktlint = "11.3.1"
-protobuf = "3.22.0"
-grpc = "1.53.0"
+kotlin = "1.9.0"
+plugin-publishing = "1.2.0"
+ktlint = "11.5.0"
+protobuf = "3.23.0"
 sisyphus = "1.6.10"
 android-plugin = "4.1.2"
 

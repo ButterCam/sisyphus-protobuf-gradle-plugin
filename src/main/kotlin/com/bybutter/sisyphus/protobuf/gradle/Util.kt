@@ -23,6 +23,14 @@ fun generateProtoTaskName(sourceSetName: String): String {
     return "generate $sourceSetName proto".toCamelCase()
 }
 
+fun protoSourceTaskName(sourceSetName: String): String {
+    return "$sourceSetName proto source".toCamelCase()
+}
+
+fun protoResourceTaskName(sourceSetName: String): String {
+    return "$sourceSetName proto resource".toCamelCase()
+}
+
 fun compileKotlinTaskName(sourceSetName: String): String {
     return if (sourceSetName == "main") {
         "compileKotlin"

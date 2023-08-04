@@ -119,3 +119,15 @@ open class GenerateProtoTask : DefaultTask() {
         }
     }
 }
+
+open class ProtoSourceTask : DefaultTask() {
+    @get:InputDirectory
+    val protoPath: DirectoryProperty = project.objects.directoryProperty()
+
+    @get:OutputDirectory
+    val output: DirectoryProperty = project.objects.directoryProperty()
+
+    @TaskAction
+    fun run() {
+    }
+}

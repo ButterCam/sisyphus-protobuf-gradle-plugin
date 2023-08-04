@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.bybutter.sisyphus.tools"
-version = "1.7.0"
+version = "2.0.0-SNAPSHOT"
 description = "Plugin for compiling proto files with Gradle in Sisyphus Framework"
 
 repositories {
@@ -45,5 +45,5 @@ tasks.test {
 }
 
 kotlin {
-    jvmToolchain(8)
+    jvmToolchain(17)
 }
