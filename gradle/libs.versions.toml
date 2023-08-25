@@ -3,7 +3,7 @@ kotlin = "1.9.0"
 plugin-publishing = "1.2.0"
 ktlint = "11.5.0"
 protobuf = "3.23.0"
-sisyphus = "1.6.10"
+sisyphus = "2.0.11"
 android-plugin = "4.1.2"
 
 [libraries]

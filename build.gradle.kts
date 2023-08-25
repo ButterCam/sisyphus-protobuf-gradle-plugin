@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.bybutter.sisyphus.tools"
-version = "2.0.0"
+version = "2.0.11"
 description = "Plugin for compiling proto files with Gradle in Sisyphus Framework"
 
 repositories {
