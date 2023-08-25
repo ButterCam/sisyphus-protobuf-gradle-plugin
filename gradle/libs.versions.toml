@@ -9,6 +9,7 @@ android-plugin = "4.1.2"
 [libraries]
 protobuf-java = { module = "com.google.protobuf:protobuf-java", version.ref = "protobuf" }
 sisyphus-protoc = { module = "com.bybutter.sisyphus.tools:sisyphus-protoc", version.ref = "sisyphus" }
+sisyphus-common = { module = "com.bybutter.sisyphus:sisyphus-common", version.ref = "sisyphus" }
 sisyphus-protocRunner = { module = "com.bybutter.sisyphus.tools:sisyphus-protoc-runner", version.ref = "sisyphus" }
 gradle-android = { module = "com.android.tools.build:gradle", version.ref = "android-plugin" }
 

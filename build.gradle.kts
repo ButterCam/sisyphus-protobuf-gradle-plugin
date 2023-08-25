@@ -17,6 +17,7 @@ repositories {
 }
 
 dependencies {
+    implementation(libs.sisyphus.common)
     implementation(libs.sisyphus.protoc)
     implementation(libs.sisyphus.protocRunner)
 
