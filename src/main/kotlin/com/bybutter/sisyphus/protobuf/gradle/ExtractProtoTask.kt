@@ -46,7 +46,10 @@ open class ExtractProtoTask : DefaultTask() {
         addProto(file, true)
     }
 
-    private fun addProto(file: File, source: Boolean) {
+    private fun addProto(
+        file: File,
+        source: Boolean,
+    ) {
         if (file.isFile) {
             FileSystems.newFileSystem(file.toPath(), javaClass.classLoader).use {
                 for (rootDirectory in it.rootDirectories) {
@@ -58,7 +61,10 @@ open class ExtractProtoTask : DefaultTask() {
         }
     }
 
-    private fun addProtoInternal(dir: Path, source: Boolean) {
+    private fun addProtoInternal(
+        dir: Path,
+        source: Boolean,
+    ) {
         if (!Files.exists(dir)) {
             return
         }
@@ -66,27 +72,36 @@ open class ExtractProtoTask : DefaultTask() {
         Files.walkFileTree(
             dir,
             object : SimpleFileVisitor<Path>() {
-                override fun visitFile(file: Path, attrs: BasicFileAttributes): FileVisitResult {
+                override fun visitFile(
+                    file: Path,
+                    attrs: BasicFileAttributes,
+                ): FileVisitResult {
                     if (file.fileName.toString().endsWith(".proto")) {
                         addProtoInternal(dir.relativize(file).toString(), Files.readAllBytes(file), file, source)
                     }
                     if (file.endsWith("protomap")) {
-                        scannedMapping += Files.readAllLines(file).mapNotNull {
-                            val map = it.split('=')
-                            if (map.size == 2) {
-                                map[0] to map[1]
-                            } else {
-                                null
+                        scannedMapping +=
+                            Files.readAllLines(file).mapNotNull {
+                                val map = it.split('=')
+                                if (map.size == 2) {
+                                    map[0] to map[1]
+                                } else {
+                                    null
+                                }
                             }
-                        }
                     }
                     return FileVisitResult.CONTINUE
                 }
-            }
+            },
         )
     }
 
-    private fun addProtoInternal(name: String, value: ByteArray, file: Path, source: Boolean) {
+    private fun addProtoInternal(
+        name: String,
+        value: ByteArray,
+        file: Path,
+        source: Boolean,
+    ) {
         if (source) {
             val protoName = name.toUnixPath()
             sourceProtos += protoName
@@ -116,7 +131,7 @@ open class ExtractProtoTask : DefaultTask() {
         if (protobuf.mapping.isNotEmpty()) {
             Files.write(
                 Paths.get(resourceOutput.asFile.get().toPath().toString(), "protomap"),
-                protobuf.mapping.map { "${it.key}=${it.value}" }
+                protobuf.mapping.map { "${it.key}=${it.value}" },
             )
         }
 
@@ -124,12 +139,12 @@ open class ExtractProtoTask : DefaultTask() {
         Files.write(Paths.get(protoPath.asFile.get().toPath().toString(), "protodesc.pb"), desc.toByteArray())
         Files.write(
             Paths.get(protoPath.asFile.get().toPath().toString(), "protomap"),
-            scannedMapping.map { "${it.key}=${it.value}" }
+            scannedMapping.map { "${it.key}=${it.value}" },
         )
         Files.write(Paths.get(protoPath.asFile.get().toPath().toString(), "protosrc"), sourceProtos)
         Files.write(
             Paths.get(protoPath.asFile.get().toPath().toString(), "protofile"),
-            sourceFileMapping.map { "${it.key}=${it.value}" }
+            sourceFileMapping.map { "${it.key}=${it.value}" },
         )
     }
 }

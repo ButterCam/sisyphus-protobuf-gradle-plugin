@@ -59,7 +59,7 @@ class ProtobufJvmPlugin : BaseProtobufPlugin() {
             "proto",
             project.objects.sourceDirectorySet(sourceSet.name, "proto source dir").apply {
                 srcDir(protoSrc(sourceSet.name))
-            }
+            },
         )
 
         sourceSet.resources {

@@ -37,32 +37,35 @@ open class GenerateProtoTask : DefaultTask() {
         output.asFile.get().mkdirs()
 
         val descFile = protoPath.get().file("protodesc.pb").asFile
-        val desc = if (descFile.exists()) {
-            DescriptorProtos.FileDescriptorSet.parseFrom(descFile.readBytes())
-        } else {
-            return
-        }
+        val desc =
+            if (descFile.exists()) {
+                DescriptorProtos.FileDescriptorSet.parseFrom(descFile.readBytes())
+            } else {
+                return
+            }
 
         val mappingFile = protoPath.get().file("protomap").asFile
-        val mapping = if (mappingFile.exists()) {
-            mappingFile.readLines().mapNotNull {
-                val map = it.split('=')
-                if (map.size == 2) {
-                    map[0] to map[1]
-                } else {
-                    null
-                }
-            }.associate { it }
-        } else {
-            mapOf()
-        }
+        val mapping =
+            if (mappingFile.exists()) {
+                mappingFile.readLines().mapNotNull {
+                    val map = it.split('=')
+                    if (map.size == 2) {
+                        map[0] to map[1]
+                    } else {
+                        null
+                    }
+                }.associate { it }
+            } else {
+                mapOf()
+            }
 
         val sourceFile = protoPath.get().file("protosrc").asFile
-        val source = if (sourceFile.exists()) {
-            sourceFile.readLines().toSet()
-        } else {
-            setOf()
-        }
+        val source =
+            if (sourceFile.exists()) {
+                sourceFile.readLines().toSet()
+            } else {
+                setOf()
+            }
 
         val compiler = ProtobufCompiler(desc, mapping, protobuf.plugins.toCodeGenerators())
         val results = compiler.generate(source)
@@ -88,10 +91,11 @@ open class GenerateProtoTask : DefaultTask() {
         }
         results.booster?.let {
             it.writeTo(output.get().asFile.toPath())
-            val booster = Paths.get(
-                resourceOutput.get().asFile.toPath().toString(),
-                "META-INF/services/${RuntimeTypes.PROTOBUF_BOOSTER.canonicalName}"
-            )
+            val booster =
+                Paths.get(
+                    resourceOutput.get().asFile.toPath().toString(),
+                    "META-INF/services/${RuntimeTypes.PROTOBUF_BOOSTER.canonicalName}",
+                )
             val boosterName = "${it.packageName}.${(it.members.first() as TypeSpec).name}"
             Files.createDirectories(booster.parent)
             Files.write(booster, boosterName.toByteArray(Charset.defaultCharset()))

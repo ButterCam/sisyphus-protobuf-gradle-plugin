@@ -13,13 +13,19 @@ open class ProtobufExtension {
 
     var autoGenerating = true
 
-    fun sourceSet(name: String, block: ProtoGeneratingConfig.() -> Unit = {}): ProtoGeneratingConfig {
+    fun sourceSet(
+        name: String,
+        block: ProtoGeneratingConfig.() -> Unit = {},
+    ): ProtoGeneratingConfig {
         val config = _configs.getOrPut(name) { ProtoGeneratingConfig() }
         config.block()
         return config
     }
 
-    fun packageMapping(proto: String, kotlin: String) {
+    fun packageMapping(
+        proto: String,
+        kotlin: String,
+    ) {
         _packageMapping[proto] = kotlin
     }
 

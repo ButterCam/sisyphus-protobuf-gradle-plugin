@@ -55,7 +55,7 @@ abstract class BaseProtobufPlugin : Plugin<Project> {
             }
             attributes.attribute(
                 Usage.USAGE_ATTRIBUTE,
-                project.objects.named(Usage::class.java, Usage.JAVA_API)
+                project.objects.named(Usage::class.java, Usage.JAVA_API),
             )
         }
     }
@@ -67,11 +67,11 @@ abstract class BaseProtobufPlugin : Plugin<Project> {
             isCanBeResolved = true
             attributes.attribute(
                 Usage.USAGE_ATTRIBUTE,
-                project.objects.named(Usage::class.java, Usage.JAVA_API)
+                project.objects.named(Usage::class.java, Usage.JAVA_API),
             )
             attributes.attribute(
                 LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE,
-                project.objects.named(LibraryElements::class.java, LibraryElements.RESOURCES)
+                project.objects.named(LibraryElements::class.java, LibraryElements.RESOURCES),
             )
         }
     }
@@ -92,7 +92,7 @@ abstract class BaseProtobufPlugin : Plugin<Project> {
         val name = extractProtoTaskName(sourceSetName)
         return project.tasks.findByName(name) as? ExtractProtoTask ?: project.tasks.register(
             name,
-            ExtractProtoTask::class.java
+            ExtractProtoTask::class.java,
         ) {
             it.resourceOutput.set(metadataDir(sourceSetName))
             it.protoPath.set(workDir(sourceSetName))
@@ -111,7 +111,7 @@ abstract class BaseProtobufPlugin : Plugin<Project> {
         val name = generateProtoTaskName(sourceSetName)
         return project.tasks.findByName(name) as? GenerateProtoTask ?: project.tasks.register(
             name,
-            GenerateProtoTask::class.java
+            GenerateProtoTask::class.java,
         ) {
             it.protoPath.set(workDir(sourceSetName))
             it.output.set(outDir(sourceSetName))
@@ -129,7 +129,7 @@ abstract class BaseProtobufPlugin : Plugin<Project> {
         val name = protoSourceTaskName(sourceSetName)
         return project.tasks.findByName(name) as? ProtoSourceTask ?: project.tasks.register(
             name,
-            ProtoSourceTask::class.java
+            ProtoSourceTask::class.java,
         ) {
             it.protoPath.set(workDir(sourceSetName))
             it.output.set(outDir(sourceSetName))
@@ -144,7 +144,7 @@ abstract class BaseProtobufPlugin : Plugin<Project> {
         val name = protoResourceTaskName(sourceSetName)
         return project.tasks.findByName(name) as? ProtoSourceTask ?: project.tasks.register(
             name,
-            ProtoSourceTask::class.java
+            ProtoSourceTask::class.java,
         ) {
             it.protoPath.set(workDir(sourceSetName))
             it.output.set(metadataDir(sourceSetName))

@@ -9,7 +9,7 @@ import kotlin.reflect.KClass
 
 data class ProtoCompilerPlugins(
     val buildInPlugins: MutableSet<BuildInPlugin> = mutableSetOf(),
-    val plugins: MutableList<CodeGenerator<*>> = mutableListOf()
+    val plugins: MutableList<CodeGenerator<*>> = mutableListOf(),
 ) {
     fun spi(): ProtoCompilerPlugins {
         buildInPlugins += BuildInPlugin.GENERATORS_FROM_SPI
@@ -57,49 +57,67 @@ data class ProtoCompilerPlugins(
     }
 
     inline fun <reified T : GeneratingState<*, *>> inline(noinline block: (T) -> Unit) {
-        plugin(object : CodeGenerator<T> {
-            override fun generate(state: T): Boolean {
-                block(state)
-                return true
-            }
-        })
+        plugin(
+            object : CodeGenerator<T> {
+                override fun generate(state: T): Boolean {
+                    block(state)
+                    return true
+                }
+            },
+        )
     }
 
-    inline fun <reified T : GeneratingState<*, *>> inline(order: Int, noinline block: (T) -> Unit) {
-        plugin(object : SortableGenerator<T> {
-            override val order: Int get() = order
+    inline fun <reified T : GeneratingState<*, *>> inline(
+        order: Int,
+        noinline block: (T) -> Unit,
+    ) {
+        plugin(
+            object : SortableGenerator<T> {
+                override val order: Int get() = order
 
-            override fun generate(state: T): Boolean {
-                block(state)
-                return true
-            }
-        })
+                override fun generate(state: T): Boolean {
+                    block(state)
+                    return true
+                }
+            },
+        )
     }
 
-    inline fun <reified T : GeneratingState<*, *>> inline(group: String, noinline block: (T) -> Unit) {
-        plugin(object : GroupedGenerator<T> {
-            override val group: String
-                get() = group
+    inline fun <reified T : GeneratingState<*, *>> inline(
+        group: String,
+        noinline block: (T) -> Unit,
+    ) {
+        plugin(
+            object : GroupedGenerator<T> {
+                override val group: String
+                    get() = group
 
-            override fun generate(state: T): Boolean {
-                block(state)
-                return true
-            }
-        })
+                override fun generate(state: T): Boolean {
+                    block(state)
+                    return true
+                }
+            },
+        )
     }
 
-    inline fun <reified T : GeneratingState<*, *>> inline(group: String, order: Int, noinline block: (T) -> Unit) {
-        plugin(object : GroupedGenerator<T>, SortableGenerator<T> {
-            override val group: String
-                get() = group
+    inline fun <reified T : GeneratingState<*, *>> inline(
+        group: String,
+        order: Int,
+        noinline block: (T) -> Unit,
+    ) {
+        plugin(
+            object : GroupedGenerator<T>, SortableGenerator<T> {
+                override val group: String
+                    get() = group
 
-            override val order: Int get() = order
+                override val order: Int get() = order
 
-            override fun generate(state: T): Boolean {
-                block(state)
-                return true
-            }
-        })
+                override fun generate(state: T): Boolean {
+                    block(state)
+                    return true
+                }
+            },
+        )
     }
 
     fun plugin(plugin: BuildInPlugin) {

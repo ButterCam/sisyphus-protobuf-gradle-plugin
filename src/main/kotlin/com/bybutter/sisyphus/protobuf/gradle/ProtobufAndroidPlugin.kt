@@ -35,9 +35,10 @@ class ProtobufAndroidPlugin : BaseProtobufPlugin() {
     }
 
     override fun protoApiFiles(sourceSetName: String): FileCollection {
-        val variant = project.android.variants.first {
-            it.name == sourceSetName
-        }
+        val variant =
+            project.android.variants.first {
+                it.name == sourceSetName
+            }
 
         return project.files(
             variant.compileConfiguration.incoming.artifactView {
@@ -45,17 +46,18 @@ class ProtobufAndroidPlugin : BaseProtobufPlugin() {
                     it.attribute(Attribute.of("artifactType", String::class.java), "jar")
                 }
             }.files,
-            variant.sourceSets.map { protoApiConfiguration(it.name) }
+            variant.sourceSets.map { protoApiConfiguration(it.name) },
         )
     }
 
     override fun protoCompileFiles(sourceSetName: String): FileCollection {
-        val variant = project.android.variants.first {
-            it.name == sourceSetName
-        }
+        val variant =
+            project.android.variants.first {
+                it.name == sourceSetName
+            }
         return project.files(
             variant.sourceSets.map { protoSrc(it.name) },
-            variant.sourceSets.map { protoConfiguration(it.name) }
+            variant.sourceSets.map { protoConfiguration(it.name) },
         )
     }
 
