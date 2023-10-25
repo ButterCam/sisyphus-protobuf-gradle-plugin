@@ -52,8 +52,7 @@ class ProtobufJvmPlugin : BaseProtobufPlugin() {
         generateProtoTask()
         extractProtoTask(sourceSet.name)
         generateProtoTask(sourceSet.name)
-        val sourceTask = sourceTask(sourceSet.name)
-        val resourceTask = resourceTask(sourceSet.name)
+        extractMetadataTask(sourceSet.name)
 
         sourceSet.extensions.add(
             "proto",
@@ -63,18 +62,18 @@ class ProtobufJvmPlugin : BaseProtobufPlugin() {
         )
 
         sourceSet.resources {
-            it.srcDir(resourceTask)
+            it.srcDir(extractMetadataTask(sourceSet.name))
         }
 
         sourceSet.extensions.configure<SourceDirectorySet>("kotlin") {
-            it.srcDir(sourceTask)
+            it.srcDir(generateProtoTask(sourceSet.name))
         }
     }
 
     private fun afterApplySourceSet(sourceSet: SourceSet) {
         project.extensions.findByType(IdeaModel::class.java)?.apply {
             module.sourceDirs = module.sourceDirs + protoSrc(sourceSet.name)
-            module.generatedSourceDirs.add(outDir(sourceSet.name))
+            module.generatedSourceDirs.add(outDir(sourceSet.name).get().asFile)
             this.module.scopes["PROVIDED"]?.get("plus")?.add(protoApiConfiguration(sourceSet.name))
             this.module.scopes["COMPILE"]?.get("plus")?.add(protoConfiguration(sourceSet.name))
         }

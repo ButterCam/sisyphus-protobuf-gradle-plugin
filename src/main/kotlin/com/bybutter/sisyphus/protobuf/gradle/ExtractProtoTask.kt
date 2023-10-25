@@ -20,9 +20,6 @@ import java.nio.file.attribute.BasicFileAttributes
 
 open class ExtractProtoTask : DefaultTask() {
     @get:OutputDirectory
-    val resourceOutput: DirectoryProperty = project.objects.directoryProperty()
-
-    @get:OutputDirectory
     val protoPath: DirectoryProperty = project.objects.directoryProperty()
 
     @get:InputFiles
@@ -115,9 +112,6 @@ open class ExtractProtoTask : DefaultTask() {
 
     @TaskAction
     fun extractProto() {
-        resourceOutput.asFile.get().deleteRecursively()
-        resourceOutput.asFile.get().mkdirs()
-
         scannedMapping += protobuf.mapping
 
         for (file in protoApiFiles) {
@@ -126,13 +120,6 @@ open class ExtractProtoTask : DefaultTask() {
 
         for (file in protoCompileFiles) {
             addSource(file)
-        }
-
-        if (protobuf.mapping.isNotEmpty()) {
-            Files.write(
-                Paths.get(resourceOutput.asFile.get().toPath().toString(), "protomap"),
-                protobuf.mapping.map { "${it.key}=${it.value}" },
-            )
         }
 
         val desc = ProtocRunner.generate(protoPath.asFile.get(), sourceProtos)

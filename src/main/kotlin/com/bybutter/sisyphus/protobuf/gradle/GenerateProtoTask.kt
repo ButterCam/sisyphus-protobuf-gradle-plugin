@@ -25,7 +25,7 @@ open class GenerateProtoTask : DefaultTask() {
     @get:OutputDirectory
     val output: DirectoryProperty = project.objects.directoryProperty()
 
-    @get:OutputDirectory
+    @get:Internal
     val resourceOutput: DirectoryProperty = project.objects.directoryProperty()
 
     @get:Internal
@@ -35,6 +35,8 @@ open class GenerateProtoTask : DefaultTask() {
     fun generateKotlin() {
         output.asFile.get().deleteRecursively()
         output.asFile.get().mkdirs()
+        resourceOutput.asFile.get().deleteRecursively()
+        resourceOutput.asFile.get().mkdirs()
 
         val descFile = protoPath.get().file("protodesc.pb").asFile
         val desc =
@@ -121,17 +123,5 @@ open class GenerateProtoTask : DefaultTask() {
                 register(this@toCodeGenerators.plugins)
             }
         }
-    }
-}
-
-open class ProtoSourceTask : DefaultTask() {
-    @get:InputDirectory
-    val protoPath: DirectoryProperty = project.objects.directoryProperty()
-
-    @get:OutputDirectory
-    val output: DirectoryProperty = project.objects.directoryProperty()
-
-    @TaskAction
-    fun run() {
     }
 }

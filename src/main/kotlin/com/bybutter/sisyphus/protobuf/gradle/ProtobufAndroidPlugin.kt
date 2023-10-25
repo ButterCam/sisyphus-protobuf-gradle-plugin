@@ -77,7 +77,7 @@ class ProtobufAndroidPlugin : BaseProtobufPlugin() {
     private fun afterApplySourceSet(sourceSet: AndroidSourceSet) {
         project.extensions.findByType(IdeaModel::class.java)?.apply {
             module.sourceDirs = module.sourceDirs + protoSrc(sourceSet.name)
-            module.generatedSourceDirs.add(outDir(sourceSet.name))
+            module.generatedSourceDirs.add(outDir(sourceSet.name).get().asFile)
             this.module.scopes["PROVIDED"]?.get("plus")?.add(protoApiConfiguration(sourceSet.name))
             this.module.scopes["COMPILE"]?.get("plus")?.add(protoConfiguration(sourceSet.name))
         }
@@ -86,15 +86,18 @@ class ProtobufAndroidPlugin : BaseProtobufPlugin() {
     private fun afterApplyVariant(variant: BaseVariant) {
         extractProtoTask(variant.name)
         generateProtoTask(variant.name)
+        extractMetadataTask(variant.name)
 
         if (extension.autoGenerating) {
             val kotlinTask = project.tasks.findByName(compileKotlinTaskName(variant.name))
             kotlinTask?.dependsOn(generateProtoTask(variant.name))
             variant.processJavaResourcesProvider.configure {
                 it.dependsOn(generateProtoTask(variant.name))
+                it.dependsOn(extractMetadataTask(variant.name))
             }
             project.tasks.withType(Jar::class.java).configureEach {
                 it.mustRunAfter(generateProtoTask(variant.name))
+                it.mustRunAfter(extractMetadataTask(variant.name))
             }
         }
     }

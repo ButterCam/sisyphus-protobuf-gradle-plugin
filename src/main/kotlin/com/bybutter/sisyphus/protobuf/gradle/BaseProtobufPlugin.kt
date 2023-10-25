@@ -9,7 +9,9 @@ import org.gradle.api.artifacts.ModuleDependency
 import org.gradle.api.attributes.Category
 import org.gradle.api.attributes.LibraryElements
 import org.gradle.api.attributes.Usage
+import org.gradle.api.file.Directory
 import org.gradle.api.file.FileCollection
+import org.gradle.api.provider.Provider
 import java.io.File
 
 abstract class BaseProtobufPlugin : Plugin<Project> {
@@ -94,7 +96,6 @@ abstract class BaseProtobufPlugin : Plugin<Project> {
             name,
             ExtractProtoTask::class.java,
         ) {
-            it.resourceOutput.set(metadataDir(sourceSetName))
             it.protoPath.set(workDir(sourceSetName))
             it.protoApiFiles.from(protoApiFiles(sourceSetName))
             it.protoCompileFiles.from(protoCompileFiles(sourceSetName))
@@ -107,6 +108,22 @@ abstract class BaseProtobufPlugin : Plugin<Project> {
         }.get()
     }
 
+    protected open fun extractMetadataTask(sourceSetName: String): ExtractMetadataTask {
+        val name = extractMetadataTaskName(sourceSetName)
+        return project.tasks.findByName(name) as? ExtractMetadataTask ?: project.tasks.register(
+            name,
+            ExtractMetadataTask::class.java,
+        ) {
+            it.resourceOutput.set(metadataDir(sourceSetName))
+            it.resourceInput.set(resourceWorkDir(sourceSetName))
+            it.group = "proto"
+            it.description = "Extract proto metadata for '$sourceSetName' source set."
+            it.protobuf = extension
+
+            it.dependsOn(generateProtoTask(sourceSetName))
+        }.get()
+    }
+
     protected open fun generateProtoTask(sourceSetName: String): GenerateProtoTask {
         val name = generateProtoTaskName(sourceSetName)
         return project.tasks.findByName(name) as? GenerateProtoTask ?: project.tasks.register(
@@ -115,7 +132,7 @@ abstract class BaseProtobufPlugin : Plugin<Project> {
         ) {
             it.protoPath.set(workDir(sourceSetName))
             it.output.set(outDir(sourceSetName))
-            it.resourceOutput.set(metadataDir(sourceSetName))
+            it.resourceOutput.set(resourceWorkDir(sourceSetName))
             it.group = "proto"
             it.description = "Generate protos for '$sourceSetName' source set."
             it.protobuf = extension
@@ -125,56 +142,30 @@ abstract class BaseProtobufPlugin : Plugin<Project> {
         }.get()
     }
 
-    protected open fun sourceTask(sourceSetName: String): ProtoSourceTask {
-        val name = protoSourceTaskName(sourceSetName)
-        return project.tasks.findByName(name) as? ProtoSourceTask ?: project.tasks.register(
-            name,
-            ProtoSourceTask::class.java,
-        ) {
-            it.protoPath.set(workDir(sourceSetName))
-            it.output.set(outDir(sourceSetName))
-            it.group = "proto"
-            it.description = "Merge proto generated source for '$sourceSetName' source set."
-
-            it.dependsOn(generateProtoTask(sourceSetName))
-        }.get()
-    }
-
-    protected open fun resourceTask(sourceSetName: String): ProtoSourceTask {
-        val name = protoResourceTaskName(sourceSetName)
-        return project.tasks.findByName(name) as? ProtoSourceTask ?: project.tasks.register(
-            name,
-            ProtoSourceTask::class.java,
-        ) {
-            it.protoPath.set(workDir(sourceSetName))
-            it.output.set(metadataDir(sourceSetName))
-            it.group = "proto"
-            it.description = "Merge proto generated resource for '$sourceSetName' source set."
-
-            it.dependsOn(generateProtoTask(sourceSetName))
-        }.get()
-    }
-
     protected open fun protoSrc(sourceSetName: String): File {
         return extension.sourceSet(sourceSetName).srcDir?.let {
             project.file(it)
         } ?: project.file("src/$sourceSetName/proto")
     }
 
-    protected open fun metadataDir(sourceSetName: String): File {
+    protected open fun metadataDir(sourceSetName: String): Provider<Directory> {
         return extension.sourceSet(sourceSetName).metadataDir?.let {
-            project.file(it)
-        } ?: project.buildDir.resolve("generated/proto/metadata/$sourceSetName")
+            project.provider { project.layout.projectDirectory.dir(it) }
+        } ?: project.layout.buildDirectory.dir("generated/proto/metadata/$sourceSetName")
     }
 
-    protected open fun outDir(sourceSetName: String): File {
+    protected open fun outDir(sourceSetName: String): Provider<Directory> {
         return extension.sourceSet(sourceSetName).metadataDir?.let {
-            project.file(it)
-        } ?: project.buildDir.resolve("generated/proto/source/$sourceSetName")
+            project.provider { project.layout.projectDirectory.dir(it) }
+        } ?: project.layout.buildDirectory.dir("generated/proto/source/$sourceSetName")
     }
 
-    protected open fun workDir(sourceSetName: String): File {
-        return project.buildDir.resolve("tmp/proto/$sourceSetName")
+    protected open fun workDir(sourceSetName: String): Provider<Directory> {
+        return project.layout.buildDirectory.dir("tmp/proto/$sourceSetName/build")
+    }
+
+    protected open fun resourceWorkDir(sourceSetName: String): Provider<Directory> {
+        return project.layout.buildDirectory.dir("tmp/proto/$sourceSetName/resource")
     }
 
     abstract fun doApply()

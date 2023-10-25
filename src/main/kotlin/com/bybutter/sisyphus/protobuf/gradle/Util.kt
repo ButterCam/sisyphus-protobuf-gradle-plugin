@@ -19,6 +19,10 @@ fun extractProtoTaskName(sourceSetName: String): String {
     return "extract $sourceSetName proto".toCamelCase()
 }
 
+fun extractMetadataTaskName(sourceSetName: String): String {
+    return "extract $sourceSetName proto metadata".toCamelCase()
+}
+
 fun generateProtoTaskName(sourceSetName: String): String {
     return "generate $sourceSetName proto".toCamelCase()
 }
